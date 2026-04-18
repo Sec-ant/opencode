@@ -1400,6 +1400,23 @@ export const layer = Layer.effect(
               })
             }
 
+            // Agents with `single_task: true` in their config options are only
+            // allowed to invoke tools once per user turn (a single task call).
+            // After a completed task call exists, strip ALL tools so the model
+            // cannot invoke anything else and is forced to produce a final
+            // text response.
+            // This is opt-in: relay agents (e.g. shelby) set the flag; general
+            // worker agents that legitimately need multiple sub-tasks do not.
+            if (step > 1 && agent.options.single_task) {
+              const hasCompletedTask = msgs.some(
+                (m) =>
+                  m.info.role === "assistant" &&
+                  m.info.id > lastUser.id &&
+                  m.parts.some((p) => p.type === "tool" && p.tool === "task" && p.state.status === "completed"),
+              )
+              if (hasCompletedTask) for (const k of Object.keys(tools)) delete tools[k]
+            }
+
             if (step === 1)
               yield* summary.summarize({ sessionID, messageID: lastUser.id }).pipe(Effect.ignore, Effect.forkIn(scope))
 
