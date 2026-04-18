@@ -1,0 +1,29 @@
+diff --git a/index-fedv7szb.js b/index-fedv7szb.js
+index 23ae50ad18b24366a5a3aca03d99320441693fc5..e928dcbcf152ee65580f64308ae5e6357c92955d 100644
+--- a/index-fedv7szb.js
++++ b/index-fedv7szb.js
+@@ -4176,6 +4176,7 @@ class CodeRenderable extends TextBufferRenderable {
+       this._highlightsDirty = true;
+       this._highlightSnapshotId++;
+       if (this._streaming && !this._drawUnstyledText && this._filetype) {
++        this.requestRender();
+         return;
+       }
+       this.textBuffer.setText(value);
+@@ -4279,6 +4280,16 @@ class CodeRenderable extends TextBufferRenderable {
+     const isInitialContent = this._streaming && !this._hadInitialContent;
+     const shouldDrawUnstyledNow = this._streaming ? isInitialContent && this._drawUnstyledText : this._drawUnstyledText;
+     if (this._streaming && !isInitialContent) {
++      if (this._lastHighlights.length > 0) {
++        const chunks = treeSitterToTextChunks(content, this._lastHighlights, this._syntaxStyle, {
++          enabled: this._conceal
++        });
++        const styledText = new StyledText(chunks);
++        this.textBuffer.setStyledText(styledText);
++      } else {
++        this.textBuffer.setText(content);
++      }
++      this.updateTextInfo();
+       this._shouldRenderTextBuffer = true;
+     } else if (shouldDrawUnstyledNow) {
+       this.textBuffer.setText(content);

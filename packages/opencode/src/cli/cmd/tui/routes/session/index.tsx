@@ -1547,7 +1547,7 @@ function ReasoningPart(props: { last: boolean; part: ReasoningPart; message: Ass
             <code
               filetype="markdown"
               drawUnstyledText={false}
-              streaming={true}
+              streaming={!isDone()}
               syntaxStyle={syntax()}
               // `_Thinking:_`/`_Thought:_` still drives markdown emphasis color and conceals the underscores;
               // the syntax override above removes only the italic attribute from that emphasis token.
