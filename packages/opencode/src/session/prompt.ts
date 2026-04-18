@@ -15,7 +15,6 @@ import { Bus } from "../bus"
 import { SystemPrompt } from "./system"
 import { Instruction } from "./instruction"
 import { Plugin } from "../plugin"
-import MAX_STEPS from "../session/prompt/max-steps.txt"
 import { ToolRegistry } from "@/tool/registry"
 import { MCP } from "../mcp"
 import { LSP } from "@/lsp/lsp"
@@ -1432,8 +1431,14 @@ export const layer = Layer.effect(
               sessionID,
               parentSessionID: session.parentID,
               system,
-              messages: [...modelMsgs, ...(isLastStep ? [{ role: "assistant" as const, content: MAX_STEPS }] : [])],
-              tools,
+              messages: modelMsgs,
+              // On the last step, remove tool definitions entirely instead of using
+              // toolChoice: "none". When toolChoice is "none" but tool schemas are still
+              // present in the request, the model's internal function-call tokens can
+              // leak into the text stream (e.g. "to=functions.task ...", raw JSON with
+              // tool params). Removing definitions prevents the model from entering its
+              // tool-calling codepath at all.
+              tools: isLastStep && format.type !== "json_schema" ? {} : tools,
               model,
               toolChoice: format.type === "json_schema" ? "required" : undefined,
             })
