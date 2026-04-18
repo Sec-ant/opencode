@@ -714,6 +714,12 @@ export const toModelMessagesEffect = Effect.fnUntraced(function* (
               text: `[Attached ${part.mime}: ${part.filename ?? "file"}]`,
             })
           } else {
+            if (isMedia(part.mime)) {
+              userMessage.parts.push({
+                type: "text",
+                text: `[attachment: ${part.id}, filename: ${part.filename ?? "file"}]`,
+              })
+            }
             userMessage.parts.push({
               type: "file",
               url: part.url,

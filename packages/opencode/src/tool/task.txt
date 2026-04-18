@@ -9,6 +9,11 @@ When NOT to use the Task tool:
 - If no available agent is a good fit for the task, use other tools directly
 
 
+Attachments:
+- When the user has shared images, PDFs, or other media in the conversation, you can forward them to the subagent using the `attachments` parameter.
+- Each media file in the conversation is annotated with a part ID like `[attachment: prt_xxx, filename: image.png]`. Pass the part IDs (e.g. `["prt_abc123", "prt_def456"]`) in the `attachments` array to forward those files to the subagent.
+- The subagent will receive the actual file content and can view/analyze them just like the primary agent can.
+
 Usage notes:
 1. Launch multiple agents concurrently whenever possible, to maximize performance; to do that, use a single message with multiple tool uses
 2. When the agent is done, it will return a single message back to you. The result returned by the agent is not visible to the user. To show the user the result, you should send a text message back to the user with a concise summary of the result. The output includes a task_id you can reuse later to continue the same subagent session.

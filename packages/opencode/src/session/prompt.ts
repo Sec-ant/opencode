@@ -1367,13 +1367,21 @@ export const layer = Layer.effect(
             const bypassAgentCheck = lastUserMsg?.parts.some((p) => p.type === "agent") ?? false
             const promptOps = yield* ops()
 
+            // Snapshot messages for tool context before the transform hook may strip
+            // media/file parts. SessionTools.resolve captures this reference for ctx.messages,
+            // so tools (e.g. task attachment lookup) see the original unmodified parts
+            // while toModelMessages (after transform) can operate on a stripped view.
+            const toolMessages = msgs.map((m) => ({
+              ...m,
+              parts: [...m.parts],
+            }))
             const tools = yield* SessionTools.resolve({
               agent,
               session,
               model,
               processor: handle,
               bypassAgentCheck,
-              messages: msgs,
+              messages: toolMessages,
               promptOps,
             }).pipe(
               Effect.provideService(Plugin.Service, plugin),

@@ -56,6 +56,10 @@ export const Parameters = Schema.Struct({
   background: Schema.optional(Schema.Boolean).annotate({
     description: "When true, launch the subagent in the background and return immediately",
   }),
+  attachments: Schema.optional(Schema.Array(Schema.String)).annotate({
+    description:
+      "Part IDs of media attachments (images, PDFs) from the conversation to forward to the subagent. Use the part IDs shown as [attachment: prt_xxx] alongside each media file.",
+  }),
 })
 
 function output(sessionID: SessionID, text: string) {
@@ -192,7 +196,22 @@ export const TaskTool = Tool.define(
       const runCancel = yield* EffectBridge.make()
 
       const runTask = Effect.fn("TaskTool.runTask")(function* () {
-        const parts = yield* ops.resolvePromptParts(params.prompt)
+        const resolvedParts = yield* ops.resolvePromptParts(params.prompt)
+        const attachmentParts = params.attachments?.length
+          ? ctx.messages
+              .flatMap((m) => m.parts)
+              .filter(
+                (p): p is Extract<typeof p, { type: "file" }> =>
+                  params.attachments!.includes(p.id as string) && p.type === "file" && MessageV2.isMedia(p.mime),
+              )
+              .map((found) => ({
+                type: "file" as const,
+                url: found.url,
+                mime: found.mime,
+                filename: found.filename,
+              }))
+          : []
+        const parts = [...resolvedParts, ...attachmentParts]
         const result = yield* ops.prompt({
           messageID: MessageID.ascending(),
           sessionID: nextSession.id,
