@@ -1,16 +1,8 @@
-diff --git a/index-fedv7szb.js b/index-fedv7szb.js
-index 23ae50ad18b24366a5a3aca03d99320441693fc5..e928dcbcf152ee65580f64308ae5e6357c92955d 100644
---- a/index-fedv7szb.js
-+++ b/index-fedv7szb.js
-@@ -4176,6 +4176,7 @@ class CodeRenderable extends TextBufferRenderable {
-       this._highlightsDirty = true;
-       this._highlightSnapshotId++;
-       if (this._streaming && !this._drawUnstyledText && this._filetype) {
-+        this.requestRender();
-         return;
-       }
-       this.textBuffer.setText(value);
-@@ -4279,6 +4280,16 @@ class CodeRenderable extends TextBufferRenderable {
+diff --git a/index-4pvh4sbk.js b/index-4pvh4sbk.js
+index b2e399c1e0282772da2f2d7786c985580952cb2f..aa893cd434a516be97bc82f85e9f9e0d4265ab66 100644
+--- a/index-4pvh4sbk.js
++++ b/index-4pvh4sbk.js
+@@ -17959,6 +17959,16 @@ class CodeRenderable extends TextBufferRenderable {
      const isInitialContent = this._streaming && !this._hadInitialContent;
      const shouldDrawUnstyledNow = this._streaming ? isInitialContent && this._drawUnstyledText : this._drawUnstyledText;
      if (this._streaming && !isInitialContent) {

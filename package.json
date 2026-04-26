@@ -141,6 +141,6 @@
     "@standard-community/standard-openapi@0.2.9": "patches/@standard-community%2Fstandard-openapi@0.2.9.patch",
     "solid-js@1.9.10": "patches/solid-js@1.9.10.patch",
     "@ai-sdk/xai@3.0.82": "patches/@ai-sdk%2Fxai@3.0.82.patch",
-    "@opentui/core@0.1.99": "patches/@opentui%2Fcore@0.1.99.patch"
+    "@opentui/core@0.1.103": "patches/@opentui%2Fcore@0.1.103.patch"
   }
 }
